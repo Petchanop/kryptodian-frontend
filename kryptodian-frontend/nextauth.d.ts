@@ -1,16 +1,16 @@
 import { DefaultSession } from "next-auth";
-import { paths } from "./schemas/api-schema";
+import { paths } from "./src/schemas/api-schema";
 
-type TGetAuthen = paths["/api/auth/profile"]["get"]["responses"]["200"]["content"]["application/json"];
+type TMeGet = paths["/api/profile/"]["get"]["responses"]["200"]["content"]["application/json"];
 
 declare module "next-auth" {
   interface User {
-    profile?: TGetAuthen;
+    profile?: TMeGet;
     token: string;
   }
 
   interface Session extends DefaultSession {
-    user: TGetAuthen;
+    user: TMeGet;
     token: string;
   }
 }
