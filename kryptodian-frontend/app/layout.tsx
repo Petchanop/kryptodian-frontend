@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/provider/provider";
-import { TopBar } from "@/components/layout/topbar";
+import { TopBar } from "@/components/layout/topbar/topbar";
 import { Footer } from "@/components/layout/footer";
 import { getServerSession, Session } from "next-auth";
 import { authOptions } from "@/lib/auth/authOptions";
@@ -20,7 +20,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions);
-  console.log("session", session);
   return (
     <html lang="en">
       <body className={inter.className}>

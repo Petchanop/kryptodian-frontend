@@ -1,6 +1,6 @@
 "use client"
 
-import { cn } from "@/lib/utils"
+import { cn, parseErrorResponseMessage } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Icons } from "@/components/ui/icons"
@@ -42,15 +42,13 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
         }
     });
     async function onSubmit(payload: z.infer<typeof createUserFormSchema>) {
-        console.log(payload)
         setIsLoading(true)
         const { data, error } = await registerAction(payload);
         setTimeout(() => {
             setIsLoading(false)
         }, 2000)
         if (error) {
-            const errorResponse: ResponseStatus = JSON.parse(JSON.stringify(error));
-            console.log(errorResponse.message);
+            const errorResponse: ResponseStatus = parseErrorResponseMessage(error);
             toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
@@ -121,7 +119,7 @@ export function RegisterForm({ className, ...props }: UserAuthFormProps) {
                                         <FormControl>
                                             <Input
                                                 placeholder="Password"
-                                                type="text"
+                                                type="password"
                                                 disabled={isLoading}
                                                 {...field}
                                             />

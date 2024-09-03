@@ -7,7 +7,7 @@ import { LogInPage } from "./(auth)/login/login-panel";
 export default async function Home() {
   const session = await getServerSession(authOptions);
   if (session) {
-    redirect("/dashboard");
+    redirect(`/user/${session.user.id}`);
   }
   return (
     <main className="min-h-screen p-10 bg-zinc-200">

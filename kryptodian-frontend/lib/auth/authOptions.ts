@@ -8,6 +8,7 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
+        username: { label: "Username", type: "username", placeholder: "" },
         email: { label: "Email", type: "email", placeholder: "" },
         password: { label: "Password", type: "" }
       },
@@ -17,50 +18,46 @@ export const authOptions: NextAuthOptions = {
           "/auth/signin",
           {
             body: {
-              username: credentials?.email as string,
+              username: credentials?.username as string,
               email: credentials?.email as string,
               password: credentials?.password as string
             }
           }
         )
-
         if (error) {
           return null;
         }
 
-        const res = await fetch(`${process.env.BACKEND_URL}/api/v1/profile/`, {
+        const res = await fetch(`${process.env.BACKEND_URL}/user/${data.id}`, {
+          method: 'GET',
           headers: {
-            "Authorization": `Bearer ${data?.accessToken}`
+            "Authorization": `Bearer ${data?.accessToken}`,
+            "Content-Type": "application/json"
           }
         });
-
         let user = await res.json();
-
-        if (user) {
-
+        if (res.ok && user) {
           user = {
-            profile: user,
+            user: user,
             ...data
           }
           return user;
         }
-        return null
+        return null;
       }
     })
   ],
   callbacks: {
     // returns token object to be consumed by session()
-    async jwt({ token, user, account }: {
+    async jwt( { token, user, account} : {
       token: any,
       user: User,
       account: any,
     }) {
-
-      if (account && user) {
+      if (user) {
         return {
-          ...token,
-          profile: user.profile,
-          bearerToken: user.token,
+          user: user,
+          bearerToken: user.accessToken,
         };
       }
 
@@ -69,12 +66,12 @@ export const authOptions: NextAuthOptions = {
     // consumes token object; returns session object
     // In session() if any failure occurs, such as fail api call
     // it will unauthorize the user and invalidate the session as side effect
-    async session({ session, token }: { session: Session, token: any }) {
+    async session({ session, token }: { session: Session, token: any}) {
       session.token = token.bearerToken;
-      session.user = token.profile;
+      session.user = token.user.user;
       return session;
     },
-    async signIn({ user, account, profile, credentials }: {
+    async signIn({ credentials }: {
       user: User,
       account: any,
       profile?: any,
@@ -89,6 +86,6 @@ export const authOptions: NextAuthOptions = {
     },
   },
   session: {
-    maxAge: 24 * 60 * 60, // 4 hours sync with backend //TODO: maybe move to .env
+    maxAge: parseInt(`${process.env.EXPIRESIN}`), // 4 hours sync with backend //TODO: maybe move to .env
   }
 }

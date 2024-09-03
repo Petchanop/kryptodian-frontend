@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Poppins } from "next/font/google";
 import macBookpic from '@/public/MacBook-Air-1.png'
 
-const poppinsFont = Poppins({
+export const poppinsFont = Poppins({
     weight: '600',
     subsets: ['latin'],
 });
