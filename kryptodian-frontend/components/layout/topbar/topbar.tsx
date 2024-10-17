@@ -1,18 +1,30 @@
 "use client";
-
 import { Session } from 'next-auth';
 import Link from 'next/link';
 import React from 'react';
 import Image from 'next/image';
 import KryptodianIcon from "@/public/Logo-white.svg";
-
 import { poppinsFont } from '../../main-page/info-panel';
-import { EditProfile } from './edit-profile';
-import { PortFolioMenuBar } from './portfolio';
+import { Profile } from './profile';
+import { create } from 'zustand';
 
 type ITopBarProps = {
   session?: Session;
 };
+
+export interface SidebarState {
+  isSidebarOpen: boolean;
+  setSidebarState: () => void;
+  setSidebarClose: (isClose: boolean) => void;
+}
+
+export const createSidebarStore = create<SidebarState>()(
+  ((set) => ({
+    isSidebarOpen: false,
+    setSidebarState: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
+    setSidebarClose: (isClose: boolean) => set(({ isSidebarOpen: isClose })),
+  })),
+);
 
 export function TopBar(props: ITopBarProps) {
   const { session } = props;
@@ -21,6 +33,7 @@ export function TopBar(props: ITopBarProps) {
   if (role) {
     console.log("topbar", role)
   }
+
   return (
     <div className="grid grid-cols-3 justify-items-center max-[700px]:grid-cols-1  max-[700px]:justify-items-center py-10 bg-primary bg-zinc-800">
       <div className='col-start-1 max-[700px]:col-span-1'>
@@ -35,8 +48,7 @@ export function TopBar(props: ITopBarProps) {
       <div className={editClass}>
         {role ?
           <>
-            <EditProfile />
-            <PortFolioMenuBar />
+            <Profile {...session?.user!} />
           </>
           : <></>
         }

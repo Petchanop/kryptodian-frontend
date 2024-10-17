@@ -1,7 +1,7 @@
 import { serviceLogout } from '@/lib/auth/serviceLogout';
+import { TMeGet } from '@/nextauth';
 import type { NextAuthOptions, Session, User } from 'next-auth'
 import CredentialsProvider from "next-auth/providers/credentials";
-import { createGatewayClient } from '../data';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -13,35 +13,20 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "" }
       },
       async authorize(credentials, req) {
-        const client = await createGatewayClient();
-        const { data, error } = await client.POST(
-          "/auth/signin",
-          {
-            body: {
-              username: credentials?.username as string,
-              email: credentials?.email as string,
-              password: credentials?.password as string
-            }
-          }
-        )
-        if (error) {
-          return null;
-        }
-
-        const res = await fetch(`${process.env.BACKEND_URL}/user/${data.id}`, {
-          method: 'GET',
+        const res = await fetch(`${process.env.BACKEND_URL}/auth/signin`, {
+          method: 'POST',
           headers: {
-            "Authorization": `Bearer ${data?.accessToken}`,
             "Content-Type": "application/json"
-          }
+          },
+          body: JSON.stringify({
+            username: credentials?.username as string,
+            email: credentials?.email as string,
+            password: credentials?.password as string
+          })
         });
-        let user = await res.json();
-        if (res.ok && user) {
-          user = {
-            user: user,
-            ...data
-          }
-          return user;
+        if (res.ok) {
+          let user = await res.json();
+          return user
         }
         return null;
       }
@@ -49,28 +34,26 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     // returns token object to be consumed by session()
-    async jwt( { token, user, account} : {
+    async jwt({ token, user }: {
       token: any,
       user: User,
-      account: any,
     }) {
       if (user) {
         return {
-          user: user,
-          bearerToken: user.accessToken,
-        };
+          user: { ...user },
+          token: token.accessToken
+        }
       }
-
       return token;
     },
     // consumes token object; returns session object
     // In session() if any failure occurs, such as fail api call
     // it will unauthorize the user and invalidate the session as side effect
-    async session({ session, token }: { session: Session, token: any}) {
-      session.token = token.bearerToken;
-      console.log("session",token, session);
-      session.user = token.user;
-      return session;
+    async session({ session, token }: { session: Session, token: any, user: User }) {
+      console.log(token);
+      session.user = token.user
+      session.token = token.user.accessToken
+      return session
     },
     async signIn({ credentials }: {
       user: User,
@@ -82,8 +65,9 @@ export const authOptions: NextAuthOptions = {
     }
   },
   events: {
-    async signOut({ token }) {
-      serviceLogout(token.bearerToken as string);
+    async signOut({token}) {
+      const auth: TMeGet = token.user as TMeGet
+      serviceLogout(auth.accessToken as string);
     },
   },
   session: {

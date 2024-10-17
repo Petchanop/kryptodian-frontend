@@ -14,7 +14,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
 import { signIn, SignInResponse } from "next-auth/react";
-import { TUserPostLogInResponse } from "../actions/postLoginRequest"
 import { TSVaction } from "@/src/schemas/server-action"
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> { }
@@ -48,6 +47,7 @@ export function LogInForm({ className, ...props }: UserAuthFormProps) {
             password: payload.password,
             redirect: false,
         }).then((res: SignInResponse | undefined) => {
+            console.log(res)
             if (typeof res !== undefined) {
                 if (res?.error) {
                     toast({

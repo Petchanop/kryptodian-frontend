@@ -2,6 +2,7 @@ import Link from "next/link";
 import { RegisterForm } from "./_components/register-form";
 
 export default function RegisterPage() {
+    console.log("register page")
     return (
         <>
             <div className="container relative h-[800px] mx-auto flex-col justify-center md:grid lg:max-w-screen-2xl lg:grid-cols lg:py-10">

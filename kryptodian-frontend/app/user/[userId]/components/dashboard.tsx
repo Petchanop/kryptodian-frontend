@@ -1,5 +1,6 @@
 "use client"
 
+import Image from 'next/image'
 import * as React from "react"
 import {
     ColumnDef,
@@ -35,6 +36,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import Nulltoken from "@/public/nulltoken.svg";
 import { useState } from "react"
 
 export type tokenDetails = {
@@ -85,10 +87,11 @@ export const columns: ColumnDef<tokenDetails>[] = [
         header: "Logo",
         cell: ({ cell, row }) => {
             return (
-                <img src={row.original.logo!}
-                    alt="token logo"
-                    width="50"
-                    height="50"
+                <Image 
+                src={row.original.logo ? row.original.logo : Nulltoken}
+                alt="token logo"
+                width="50"
+                height="50"
                 />
             )
         }

@@ -33,7 +33,7 @@ export interface paths {
         delete: operations["deletePortfolio"];
         options?: never;
         head?: never;
-        patch?: never;
+        patch: operations["updatePortfolio"];
         trace?: never;
     };
     "/portfolio/details/{id}": {
@@ -231,6 +231,7 @@ export interface components {
             id: string;
             username: string;
             email: string;
+            role: string;
             accessToken: string;
             timeout: string;
         };
@@ -355,6 +356,32 @@ export interface operations {
             };
         };
     };
+    updatePortfolio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["createPortfolioDto"];
+            };
+        };
+        responses: {
+            /** @description update portfolio by id as a param */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Response"];
+                };
+            };
+        };
+    };
     getPortfolioDetails: {
         parameters: {
             query?: never;
@@ -469,7 +496,10 @@ export interface operations {
     };
     findAll: {
         parameters: {
-            query?: never;
+            query: {
+                page: number;
+                pageSize: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;

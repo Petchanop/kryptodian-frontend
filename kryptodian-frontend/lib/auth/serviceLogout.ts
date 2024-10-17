@@ -9,7 +9,8 @@ export async function serviceLogout(access_token: string) {
   const headers = {
     Authorization: "Bearer " + access_token,
   };
-  const url = process.env.BACKEND_URL + "/api/v1/auth/logout/";
+  console.log("service logout", access_token)
+  const url = process.env.BACKEND_URL + "/auth/signout/";
   try {
     const r = await axios.post(url, {}, { headers: headers });
   } catch (e: any) {
