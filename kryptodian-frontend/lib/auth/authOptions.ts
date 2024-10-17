@@ -68,7 +68,8 @@ export const authOptions: NextAuthOptions = {
     // it will unauthorize the user and invalidate the session as side effect
     async session({ session, token }: { session: Session, token: any}) {
       session.token = token.bearerToken;
-      session.user = token.user.user;
+      console.log("session",token, session);
+      session.user = token.user;
       return session;
     },
     async signIn({ credentials }: {
