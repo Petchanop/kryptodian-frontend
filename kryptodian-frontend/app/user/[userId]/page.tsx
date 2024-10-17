@@ -1,9 +1,9 @@
+import { PortFolioDataTable } from "./components/dashboard";
+
 export default function UserPage() {
     return (
         <>
-            <div>
-                This is user page dashboard.
-            </div>
+            <PortFolioDataTable />
         </>
     )
 }
